@@ -97,5 +97,16 @@
         });
     }
 
+    /* ---------- Bail out gracefully: reduced motion or missing libraries ---------- */
+    const intro = document.querySelector('#intro');
+    function dismissIntro() {
+        root.classList.remove('play-intro');
+        if (intro) intro.hidden = true;
+    }
+    if (reduce || !window.gsap || !window.ScrollTrigger) { dismissIntro(); return; }
+
+    gsap.registerPlugin(ScrollTrigger);
+    root.classList.add('motion');
+
     });
 })();
