@@ -259,4 +259,39 @@
         }
     });
 
+    /* ---------- Chapter titles: word-by-word curtain reveal ---------- */
+    // Custom splitter so the red accent words move as one piece and keep their ink shadow.
+    function splitWords(el) {
+        const wrap = node => {
+            const outer = document.createElement('span');
+            outer.className = 'w';
+            const inner = document.createElement('span');
+            inner.className = 'wi';
+            inner.appendChild(node);
+            outer.appendChild(inner);
+            return outer;
+        };
+        [...el.childNodes].forEach(node => {
+            if (node.nodeType === 3) {
+                const frag = document.createDocumentFragment();
+                node.textContent.split(/(\s+)/).forEach(part => {
+                    if (!part) return;
+                    frag.appendChild(/^\s+$/.test(part) ? document.createTextNode(part) : wrap(document.createTextNode(part)));
+                });
+                node.replaceWith(frag);
+            } else if (node.nodeType === 1 && node.tagName !== 'BR') {
+                const placeholder = document.createComment('');
+                node.replaceWith(placeholder);
+                placeholder.replaceWith(wrap(node));
+            }
+        });
+        return el.querySelectorAll('.wi');
+    }
+    gsap.utils.toArray('.split-title').forEach(title => {
+        gsap.from(splitWords(title), {
+            yPercent: 120, rotate: 8, duration: 1, ease: 'back.out(1.6)', stagger: 0.07,
+            scrollTrigger: { trigger: title, start: 'top 85%', once: true }
+        });
+    });
+
 })();
