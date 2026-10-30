@@ -401,4 +401,30 @@
         .from('.phone', { y: 60, rotate: -20, autoAlpha: 0, duration: 1.1, ease: 'back.out(1.8)' }, 0.7)
         .from('.browser', { scaleY: 0, transformOrigin: 'top', duration: 0.7, ease: 'expo.out' }, 0.6);
 
+    /* ---------- 3D tilt with moving screentone, magnetic buttons ---------- */
+    if (finePointer) {
+        document.querySelectorAll('.tilt').forEach(card => {
+            const rx = gsap.quickTo(card, 'rotateX', { duration: 0.6, ease: 'power3' });
+            const ry = gsap.quickTo(card, 'rotateY', { duration: 0.6, ease: 'power3' });
+            card.addEventListener('pointermove', e => {
+                const r = card.getBoundingClientRect();
+                const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+                rx((0.5 - py) * 10); ry((px - 0.5) * 12);
+                card.style.setProperty('--mx', `${px * 100}%`);
+                card.style.setProperty('--my', `${py * 100}%`);
+            });
+            card.addEventListener('pointerleave', () => { rx(0); ry(0); });
+        });
+        document.querySelectorAll('.magnetic').forEach(btn => {
+            const mx = gsap.quickTo(btn, 'x', { duration: 0.5, ease: 'power3' });
+            const my = gsap.quickTo(btn, 'y', { duration: 0.5, ease: 'power3' });
+            btn.addEventListener('pointermove', e => {
+                const r = btn.getBoundingClientRect();
+                mx((e.clientX - r.left - r.width / 2) * 0.25);
+                my((e.clientY - r.top - r.height / 2) * 0.35);
+            });
+            btn.addEventListener('pointerleave', () => { mx(0); my(0); });
+        });
+    }
+
 })();
