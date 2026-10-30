@@ -655,16 +655,32 @@ input:focus, textarea:focus { outline: none; background: var(--white); box-shado
 .custom-cursor .cursor { display: block; }
 .custom-cursor, .custom-cursor a, .custom-cursor button, .custom-cursor label { cursor: none; }
 .custom-cursor input, .custom-cursor textarea { cursor: text; }
-.cursor-dot, .cursor-ring { position: fixed; left: 0; top: 0; z-index: 400; pointer-events: none; border-radius: 50%; }
-.cursor-dot { width: 8px; height: 8px; margin: -4px; background: var(--red); }
-.cursor-ring {
-  width: 36px; height: 36px; margin: -18px; border: 3px solid var(--ink); display: grid; place-items: center;
-  transition: width 0.3s var(--ease), height 0.3s var(--ease), margin 0.3s var(--ease), background 0.3s, border-color 0.3s;
+.cursor-pointer, .cursor-bubble { position: fixed; left: 0; top: 0; z-index: 400; pointer-events: none; }
+/* Manga arrow: red fill, ink outline, hard offset shadow; its tip sits on the hotspot */
+.cursor-pointer { width: 64px; height: 64px; margin: -32px; overflow: visible; filter: drop-shadow(3px 3px 0 var(--ink)); }
+.cursor-arrow {
+  fill: var(--red); stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round;
+  transform-origin: 0 0; transition: transform 0.3s var(--ease), fill 0.2s;
 }
-.cursor.is-link .cursor-ring { width: 60px; height: 60px; margin: -30px; background: rgba(217, 38, 50, 0.15); border-color: var(--red); }
-.cursor.is-label .cursor-ring { width: 88px; height: 88px; margin: -44px; background: var(--red); border-color: var(--ink); }
-.cursor-label { font: 400 1.05rem var(--sfx); letter-spacing: 0.1em; color: var(--white); opacity: 0; transition: opacity 0.2s; }
-.cursor.is-label .cursor-label { opacity: 1; }
+/* Impact burst that flashes behind the arrow over anything clickable */
+.cursor-burst {
+  fill: var(--white); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round;
+  transform-origin: 0 0; transform: scale(0) rotate(-40deg); transition: transform 0.35s var(--ease);
+}
+.cursor.is-link .cursor-burst { transform: scale(1) rotate(0deg); animation: cursor-burst-spin 6s linear infinite; }
+.cursor.is-link .cursor-arrow, .cursor.is-label .cursor-arrow { transform: rotate(-14deg) scale(1.1); fill: var(--ink); stroke: var(--white); }
+@keyframes cursor-burst-spin { to { rotate: 360deg; } }
+/* Speech bubble that trails the arrow for labelled targets ("View") */
+.cursor-bubble {
+  margin: 30px 0 0 22px; padding: 6px 14px 4px; background: var(--white); border: var(--stroke); border-radius: 50% / 45%;
+  box-shadow: 4px 4px 0 var(--ink); transform-origin: 0 0; scale: 0; transition: scale 0.3s var(--ease);
+}
+.cursor-bubble::before, .cursor-bubble::after { content: ''; position: absolute; clip-path: polygon(0 0, 100% 100%, 35% 100%); }
+.cursor-bubble::before { left: 8px; top: -18px; width: 20px; height: 20px; background: var(--ink); }
+.cursor-bubble::after { left: 13px; top: -10px; width: 12px; height: 13px; background: var(--white); }
+.cursor.is-label .cursor-bubble { scale: 1; }
+.cursor-label { display: block; white-space: nowrap; font: 400 1.25rem/1 var(--sfx); letter-spacing: 0.08em; color: var(--red); }
+@media (prefers-reduced-motion: reduce) { .cursor.is-link .cursor-burst { animation: none; } }
 .pop-sfx {
   position: fixed; left: 0; top: 0; z-index: 401; pointer-events: none; white-space: nowrap;
   font: 400 1.9rem/1 var(--sfx); letter-spacing: 0.04em; color: var(--red);

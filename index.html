@@ -51,7 +51,13 @@
 
 <canvas class="sky-canvas" id="sky" aria-hidden="true"></canvas>
 <div class="paper" aria-hidden="true"></div>
-<div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"><span class="cursor-label"></span></span></div>
+<div class="cursor" aria-hidden="true">
+  <svg class="cursor-pointer" viewBox="-32 -32 64 64">
+    <polygon class="cursor-burst" points="0.0,-23.0 2.4,-10.7 8.2,-17.1 6.9,-8.6 18.0,-14.3 9.9,-4.8 18.5,-4.2 11.0,0.0 22.4,5.1 9.9,4.8 14.9,11.8 6.9,8.6 10.0,20.7 2.4,10.7 0.0,19.0 -2.4,10.7 -10.0,20.7 -6.9,8.6 -14.9,11.8 -9.9,4.8 -22.4,5.1 -11.0,0.0 -18.5,-4.2 -9.9,-4.8 -18.0,-14.3 -6.9,-8.6 -8.2,-17.1 -2.4,-10.7"/>
+    <path class="cursor-arrow" d="M0 0 L0 24 L6.5 18 L11 28 L15.5 26 L11 16.5 L20 16.5 Z"/>
+  </svg>
+  <span class="cursor-bubble"><span class="cursor-label"></span></span>
+</div>
 <div class="impact" aria-hidden="true"></div>
 <div class="scroll-progress" aria-hidden="true"><span></span></div>
 

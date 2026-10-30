@@ -533,8 +533,8 @@
         root.classList.add('custom-cursor');
         const cursor = document.querySelector('.cursor');
         const label = cursor.querySelector('.cursor-label');
-        const dx = gsap.quickTo('.cursor-dot', 'x', { duration: 0.08 }), dy = gsap.quickTo('.cursor-dot', 'y', { duration: 0.08 });
-        const rx = gsap.quickTo('.cursor-ring', 'x', { duration: 0.4, ease: 'power3' }), ry = gsap.quickTo('.cursor-ring', 'y', { duration: 0.4, ease: 'power3' });
+        const dx = gsap.quickTo('.cursor-pointer', 'x', { duration: 0.05 }), dy = gsap.quickTo('.cursor-pointer', 'y', { duration: 0.05 });
+        const rx = gsap.quickTo('.cursor-bubble', 'x', { duration: 0.35, ease: 'power3' }), ry = gsap.quickTo('.cursor-bubble', 'y', { duration: 0.35, ease: 'power3' });
         addEventListener('pointermove', e => { dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY); }, { passive: true });
         document.addEventListener('pointerover', e => {
             const labelled = e.target.closest('[data-cursor]');
@@ -549,7 +549,7 @@
         let wordIndex = 0;
         addEventListener('pointerdown', e => {
             if (e.target.closest('input, textarea')) return;
-            gsap.fromTo('.cursor-ring', { scale: 0.5 }, { scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
+            gsap.fromTo('.cursor-pointer', { scale: 0.7 }, { scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
             const word = document.createElement('span');
             word.className = 'pop-sfx';
             word.textContent = words[wordIndex++ % words.length];
