@@ -172,5 +172,39 @@
     };
     heroSet();
 
+    /* ---------- Opening sequence (once per session, skippable) ---------- */
+    let seen = false;
+    try { seen = sessionStorage.getItem('mz-intro') === '1'; } catch (e) { /* storage unavailable */ }
+    if (intro && !seen) {
+        intro.hidden = false;
+        intro.style.animation = 'none'; // JS owns the intro now; cancel the CSS failsafe
+        lenis && lenis.stop();
+        const counter = intro.querySelector('#intro-count');
+        const count = { v: 0 };
+        const tl = gsap.timeline({ onComplete: finish });
+        tl.from('.ip1', { xPercent: -130, rotate: -8, duration: 0.6, ease: 'back.out(1.6)' }, 0.1)
+          .from('.ip2', { scale: 2.4, autoAlpha: 0, duration: 0.5, ease: 'expo.out' }, 0.55)
+          .to('.intro-stage', { keyframes: { x: [-12, 10, -7, 5, -2, 0] }, duration: 0.4, ease: 'none' }, 0.6)
+          .from('.ip3', { xPercent: 130, rotate: 8, duration: 0.6, ease: 'back.out(1.6)' }, 0.9)
+          .to(count, { v: 100, duration: 2, ease: 'power2.inOut', onUpdate: () => { counter.textContent = String(Math.round(count.v)).padStart(3, '0'); } }, 0)
+          .to('.intro-sun', { scale: 1, duration: 0.7, ease: 'expo.in' }, 2.1)
+          .to(intro, { autoAlpha: 0, duration: 0.5, ease: 'power2.out' }, 2.8);
+        const onKey = e => { if (e.key === 'Escape') finish(); };
+        function finish() {
+            if (intro.hidden) return;
+            removeEventListener('keydown', onKey);
+            tl.kill();
+            dismissIntro();
+            try { sessionStorage.setItem('mz-intro', '1'); } catch (e) { /* ignore */ }
+            lenis && lenis.start();
+            heroPlay();
+        }
+        intro.querySelector('#intro-skip').addEventListener('click', finish);
+        addEventListener('keydown', onKey);
+    } else {
+        dismissIntro();
+        heroPlay();
+    }
+
     });
 })();
