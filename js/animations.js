@@ -337,4 +337,19 @@
         });
     });
 
+    /* ---------- Generic reveals ---------- */
+    gsap.set('.reveal', { autoAlpha: 0, y: 40 });
+    ScrollTrigger.batch('.reveal', {
+        start: 'top 88%', once: true,
+        onEnter: batch => gsap.to(batch, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'back.out(1.4)', stagger: 0.08, overwrite: 'auto' })
+    });
+
+    /* ---------- Giant chapter kanji drift at their own depth ---------- */
+    gsap.utils.toArray('.bg-kanji').forEach(k => {
+        gsap.fromTo(k, { yPercent: -15 }, {
+            yPercent: 25, ease: 'none',
+            scrollTrigger: { trigger: k.parentElement, start: 'top bottom', end: 'bottom top', scrub: true }
+        });
+    });
+
 })();
