@@ -230,5 +230,13 @@
         }, { passive: true });
     }
 
+    /* ---------- Tapes run faster with scroll velocity ---------- */
+    const loops = [];
+    document.querySelectorAll('.marquee').forEach(m => {
+        const tracks = m.querySelectorAll('.marquee-track');
+        tracks.forEach(t => { t.style.animation = 'none'; });
+        loops.push(m.classList.contains('reverse')
+            ? gsap.fromTo(tracks, { xPercent: -100 }, { xPercent: 0, ease: 'none', duration: 30, repeat: -1 })
+            : gsap.to(tracks, { xPercent: -100, ease: 'none', duration: 34, repeat: -1 }));
     });
 })();
