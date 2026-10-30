@@ -294,4 +294,47 @@
         });
     });
 
+    /* ---------- Chapter openings: scrambled subtitle, brush slash, impact frame ---------- */
+    const glyphs = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01<>/{}#';
+    function scramble(el) {
+        const final = el.textContent;
+        const state = { p: 0 };
+        el.setAttribute('aria-label', final.trim());
+        gsap.to(state, {
+            p: 1, duration: 1, ease: 'power2.out',
+            onUpdate: () => {
+                const n = Math.floor(final.length * state.p);
+                let out = final.slice(0, n);
+                for (let i = n; i < final.length; i++) out += final[i] === ' ' ? ' ' : glyphs[(Math.random() * glyphs.length) | 0];
+                el.textContent = out;
+            },
+            onComplete: () => { el.textContent = final; el.removeAttribute('aria-label'); }
+        });
+    }
+    document.querySelectorAll('.section .section-heading').forEach(heading => {
+        const eyebrow = heading.querySelector('.eyebrow');
+        let label = null;
+        if (eyebrow) { // wrap the plain subtitle text so it can be scrambled without touching the badges
+            const text = [...eyebrow.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+            if (text) {
+                label = document.createElement('span');
+                label.textContent = text.textContent;
+                text.replaceWith(label);
+            }
+        }
+        const slash = document.createElement('span');
+        slash.className = 'slash';
+        slash.setAttribute('aria-hidden', 'true');
+        (heading.querySelector('.split-title') || heading.firstElementChild).after(slash);
+        gsap.set(slash, { scaleX: 0 });
+        ScrollTrigger.create({
+            trigger: heading, start: 'top 80%', once: true,
+            onEnter: () => {
+                if (label) scramble(label);
+                gsap.to(slash, { scaleX: 1, duration: 0.45, ease: 'expo.out', delay: 0.3 });
+                gsap.delayedCall(0.3, () => flash(0.45));
+            }
+        });
+    });
+
 })();
