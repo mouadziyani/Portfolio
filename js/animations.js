@@ -352,4 +352,33 @@
         });
     });
 
+    /* ---------- About: panel wipe, camera push, counters, dialogue ---------- */
+    gsap.fromTo('.portrait-frame', { clipPath: 'inset(0% 100% 0% 0%)' }, {
+        clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'expo.inOut',
+        scrollTrigger: { trigger: '.portrait-frame', start: 'top 80%', once: true }
+    });
+    gsap.fromTo('.portrait-frame img', { scale: 1.75 }, {
+        scale: 1.45, ease: 'none',
+        scrollTrigger: { trigger: '.portrait-frame', start: 'top bottom', end: 'bottom top', scrub: true }
+    });
+    gsap.from('.portrait-kanji', {
+        autoAlpha: 0, y: -60, duration: 0.8, ease: 'back.out(2)', delay: 0.9,
+        scrollTrigger: { trigger: '.portrait-frame', start: 'top 80%', once: true }
+    });
+    document.querySelectorAll('.count').forEach(el => {
+        const n = { v: 0 }, to = Number(el.dataset.to), pad = Number(el.dataset.pad || 0);
+        gsap.to(n, {
+            v: to, duration: 1.6, ease: 'power2.out',
+            onUpdate: () => { el.textContent = String(Math.round(n.v)).padStart(pad, '0'); },
+            scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+        });
+    });
+    const dialogue = document.querySelector('.dialogue-text');
+    if (dialogue && window.SplitType) {
+        gsap.from(new SplitType(dialogue, { types: 'words, chars' }).chars, {
+            autoAlpha: 0, duration: 0.01, stagger: 0.028, ease: 'none',
+            scrollTrigger: { trigger: '.dialogue', start: 'top 85%', once: true }
+        });
+    }
+
 })();
