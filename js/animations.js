@@ -381,4 +381,24 @@
         });
     }
 
+    /* ---------- Skills: the ability deck is dealt and each card unlocks ---------- */
+    const cards = gsap.utils.toArray('.skill-group');
+    const deck = gsap.timeline({ scrollTrigger: { trigger: '.skills-grid', start: 'top 80%', once: true } });
+    deck.from(cards, { y: 160, rotateX: -50, rotateZ: i => (i - 2) * 6, scale: 0.8, autoAlpha: 0, duration: 1.1, ease: 'expo.out', stagger: 0.13 });
+    cards.forEach((card, i) => {
+        const stamp = document.createElement('span');
+        stamp.className = 'unlock-stamp';
+        stamp.setAttribute('aria-hidden', 'true');
+        stamp.textContent = 'Unlocked!';
+        card.appendChild(stamp);
+        const at = 0.5 + i * 0.13;
+        deck.call(() => card.classList.add('unlocked'), null, at)
+            .from(card.querySelectorAll('.chips span'), { scale: 0, autoAlpha: 0, duration: 0.5, stagger: 0.06, ease: 'back.out(2.5)' }, at)
+            .fromTo(stamp, { autoAlpha: 0, scale: 2.6, rotate: -25 }, { autoAlpha: 1, scale: 1, rotate: -8, duration: 0.4, ease: 'back.out(3)' }, at + 0.2)
+            .to(stamp, { autoAlpha: 0, y: -12, duration: 0.5, ease: 'power2.in' }, at + 1.8);
+    });
+    deck.from('.orbit', { scale: 0, rotate: -180, duration: 1.4, ease: 'expo.out' }, 0.5)
+        .from('.phone', { y: 60, rotate: -20, autoAlpha: 0, duration: 1.1, ease: 'back.out(1.8)' }, 0.7)
+        .from('.browser', { scaleY: 0, transformOrigin: 'top', duration: 0.7, ease: 'expo.out' }, 0.6);
+
 })();
