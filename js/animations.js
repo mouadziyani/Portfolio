@@ -239,4 +239,24 @@
             ? gsap.fromTo(tracks, { xPercent: -100 }, { xPercent: 0, ease: 'none', duration: 30, repeat: -1 })
             : gsap.to(tracks, { xPercent: -100, ease: 'none', duration: 34, repeat: -1 }));
     });
+
+    /* ---------- Scroll speed: wind, speed lines, cards lean, tapes accelerate ---------- */
+    const skewSet = gsap.quickTo(gsap.utils.toArray('.timeline-item, .highlights div, .learning'), 'skewY', { duration: 0.5, ease: 'power3' });
+    let settle;
+    ScrollTrigger.create({
+        start: 0, end: 'max',
+        onUpdate: self => {
+            const v = self.getVelocity();
+            sky.wind = gsap.utils.clamp(-14, 14, v / 160);
+            skewSet(gsap.utils.clamp(-5, 5, v / -400));
+            const boost = 1 + Math.min(6, Math.abs(v) / 300);
+            loops.forEach(l => gsap.to(l, { timeScale: boost, duration: 0.2, overwrite: true }));
+            clearTimeout(settle);
+            settle = setTimeout(() => {
+                skewSet(0);
+                loops.forEach(l => gsap.to(l, { timeScale: 1, duration: 1 }));
+            }, 140);
+        }
+    });
+
 })();
