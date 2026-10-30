@@ -36,6 +36,25 @@
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
+
+<!-- Opening: three manga panels slam in (shown by JS only, skippable) -->
+<div class="intro" id="intro" hidden aria-hidden="true">
+  <div class="intro-stage">
+    <div class="intro-panel ip1"><span>A Mouad Ziyani Production</span></div>
+    <div class="intro-panel ip2"><span class="intro-kanji" lang="ja">開発者</span></div>
+    <div class="intro-panel ip3"><span>The Developer</span></div>
+  </div>
+  <div class="intro-sun"></div>
+  <p class="intro-count"><span id="intro-count">000</span></p>
+  <button class="intro-skip" type="button" id="intro-skip">Skip intro ↠</button>
+</div>
+
+<canvas class="sky-canvas" id="sky" aria-hidden="true"></canvas>
+<div class="paper" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"><span class="cursor-label"></span></span></div>
+<div class="impact" aria-hidden="true"></div>
+<div class="scroll-progress" aria-hidden="true"><span></span></div>
+
 <header class="navbar" id="navbar">
 <nav aria-label="Main navigation">
 <div class="nav-inner">
