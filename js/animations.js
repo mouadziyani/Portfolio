@@ -427,4 +427,58 @@
         });
     }
 
+    /* ---------- Projects: pinned horizontal reel of panels on wide screens ---------- */
+    const mm = gsap.matchMedia();
+    const section = document.querySelector('.projects-section');
+    const pin = document.querySelector('.projects-pin');
+    const track = document.querySelector('.projects-track');
+    mm.add('(min-width: 1024px) and (min-height: 620px)', () => {
+        section.classList.add('is-horizontal');
+        const distance = () => track.scrollWidth - innerWidth;
+        const tween = gsap.to(track, {
+            x: () => -distance(), ease: 'none',
+            scrollTrigger: {
+                trigger: pin, pin: true, scrub: 1, start: 'top top',
+                end: () => '+=' + distance(), invalidateOnRefresh: true, anticipatePin: 1
+            }
+        });
+        gsap.utils.toArray('.project').forEach(card => {
+            gsap.from(card.querySelector('.project-visual img'), {
+                xPercent: -10, scale: 1.2, ease: 'none',
+                scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true }
+            });
+            gsap.from(card.querySelector('.project-number'), {
+                scale: 0, rotate: -40, ease: 'back.out(3)', duration: 0.6,
+                scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left 75%', toggleActions: 'play none none reverse' }
+            });
+            gsap.from(card, {
+                rotate: 3, y: 40, ease: 'none',
+                scrollTrigger: { trigger: card, containerAnimation: tween, start: 'left right', end: 'left 40%', scrub: true }
+            });
+        });
+        // Keep keyboard users oriented: focusing a link in an off-screen panel scrolls the reel to it.
+        const onFocus = e => {
+            const card = e.target.closest('.project');
+            if (!card) return;
+            pin.scrollLeft = 0;
+            const st = tween.scrollTrigger;
+            const progress = gsap.utils.clamp(0, 1, (card.offsetLeft - innerWidth * 0.1) / distance());
+            const y = st.start + (st.end - st.start) * progress;
+            lenis ? lenis.scrollTo(y, { immediate: true }) : scrollTo(0, y);
+        };
+        track.addEventListener('focusin', onFocus);
+        return () => {
+            section.classList.remove('is-horizontal');
+            track.removeEventListener('focusin', onFocus);
+        };
+    });
+    mm.add('(max-width: 1023px), (max-height: 619px)', () => {
+        gsap.utils.toArray('.project').forEach((card, i) => {
+            gsap.from(card, {
+                y: 80, rotate: i % 2 ? 3 : -3, autoAlpha: 0, duration: 1, ease: 'back.out(1.4)',
+                scrollTrigger: { trigger: card, start: 'top 88%', once: true }
+            });
+        });
+    });
+
 })();
