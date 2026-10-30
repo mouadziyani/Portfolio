@@ -517,4 +517,60 @@
             navbar.classList.toggle('hide', hide);
         }
     });
+
+    /* ---------- Hero letters bounce when touched ---------- */
+    heroChars.forEach(ch => {
+        ch.addEventListener('pointerenter', () => {
+            if (gsap.isTweening(ch)) return;
+            gsap.timeline()
+                .to(ch, { yPercent: -18, scaleY: 1.12, rotate: gsap.utils.random(-8, 8), duration: 0.18, ease: 'power2.out' })
+                .to(ch, { yPercent: 0, scaleY: 1, rotate: 0, duration: 0.9, ease: 'elastic.out(1.2, 0.35)' });
+        });
+    });
+
+    /* ---------- Ink cursor; clicks burst into manga SFX ---------- */
+    if (finePointer) {
+        root.classList.add('custom-cursor');
+        const cursor = document.querySelector('.cursor');
+        const label = cursor.querySelector('.cursor-label');
+        const dx = gsap.quickTo('.cursor-dot', 'x', { duration: 0.08 }), dy = gsap.quickTo('.cursor-dot', 'y', { duration: 0.08 });
+        const rx = gsap.quickTo('.cursor-ring', 'x', { duration: 0.4, ease: 'power3' }), ry = gsap.quickTo('.cursor-ring', 'y', { duration: 0.4, ease: 'power3' });
+        addEventListener('pointermove', e => { dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY); }, { passive: true });
+        document.addEventListener('pointerover', e => {
+            const labelled = e.target.closest('[data-cursor]');
+            const link = e.target.closest('a, button, .tilt, label');
+            cursor.classList.toggle('is-label', !!labelled);
+            cursor.classList.toggle('is-link', !labelled && !!link);
+            label.textContent = labelled ? labelled.dataset.cursor : '';
+        });
+        root.addEventListener('mouseleave', () => gsap.to(cursor, { autoAlpha: 0, duration: 0.2 }));
+        root.addEventListener('mouseenter', () => gsap.to(cursor, { autoAlpha: 1, duration: 0.2 }));
+        const words = ['POW!', 'BAM!', 'ドン!', 'ZAP!', 'バン!', 'WHAM!', 'ゴゴ!'];
+        let wordIndex = 0;
+        addEventListener('pointerdown', e => {
+            if (e.target.closest('input, textarea')) return;
+            gsap.fromTo('.cursor-ring', { scale: 0.5 }, { scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
+            const word = document.createElement('span');
+            word.className = 'pop-sfx';
+            word.textContent = words[wordIndex++ % words.length];
+            document.body.appendChild(word);
+            gsap.timeline({ onComplete: () => word.remove() })
+                .fromTo(word, { x: e.clientX - 30, y: e.clientY - 50, scale: 0, rotate: gsap.utils.random(-25, 25) },
+                    { scale: 1.2, y: e.clientY - 70, duration: 0.25, ease: 'back.out(3)' })
+                .to(word, { scale: 1, duration: 0.15 })
+                .to(word, { autoAlpha: 0, y: e.clientY - 100, duration: 0.4, ease: 'power2.in' }, '+=0.2');
+            for (let i = 0; i < 8; i++) { // ink burst lines
+                const s = document.createElement('span');
+                s.className = 'spark';
+                document.body.appendChild(s);
+                const a = (360 / 8) * i;
+                gsap.fromTo(s, { x: e.clientX, y: e.clientY, rotate: a + 90, scaleY: 0.2, autoAlpha: 1 }, {
+                    x: e.clientX + Math.cos(a * Math.PI / 180) * 46, y: e.clientY + Math.sin(a * Math.PI / 180) * 46,
+                    scaleY: 1, autoAlpha: 0, duration: 0.45, ease: 'power3.out', onComplete: () => s.remove()
+                });
+            }
+        });
+    }
+
+    addEventListener('load', () => ScrollTrigger.refresh());
 })();
