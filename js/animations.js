@@ -481,4 +481,40 @@
         });
     });
 
+    /* ---------- Journey: red line inks itself down the timeline ---------- */
+    gsap.fromTo('.timeline-beam', { scaleY: 0 }, {
+        scaleY: 1, ease: 'none',
+        scrollTrigger: { trigger: '.timeline', start: 'top 70%', end: 'bottom 60%', scrub: true }
+    });
+    gsap.utils.toArray('.timeline-item').forEach((item, i) => {
+        gsap.from(item, {
+            x: 80, rotate: i % 2 ? 2 : -2, autoAlpha: 0, duration: 0.9, ease: 'back.out(1.5)',
+            scrollTrigger: { trigger: item, start: 'top 85%', once: true }
+        });
+    });
+
+    /* ---------- Finale ---------- */
+    gsap.from('.form-bubble', {
+        scale: 0, rotate: -30, duration: 0.7, ease: 'back.out(3)',
+        scrollTrigger: { trigger: '.form-panel', start: 'top 80%', once: true }
+    });
+    gsap.from('.tbc', {
+        xPercent: -140, duration: 1.2, ease: 'expo.out',
+        scrollTrigger: { trigger: '.tbc', start: 'top 95%', once: true }
+    });
+    gsap.from('.credits p', {
+        y: 60, autoAlpha: 0, duration: 1, stagger: 0.12, ease: 'back.out(1.6)',
+        scrollTrigger: { trigger: '.credits', start: 'top 90%', once: true }
+    });
+
+    /* ---------- Navbar hides when diving down, returns when scrolling up ---------- */
+    const navbar = document.querySelector('#navbar');
+    ScrollTrigger.create({
+        start: 0, end: 'max',
+        onUpdate: self => {
+            const menuOpen = document.querySelector('#mobile-menu-btn')?.getAttribute('aria-expanded') === 'true';
+            const hide = self.direction === 1 && self.scroll() > 500 && !menuOpen && !navbar.contains(document.activeElement);
+            navbar.classList.toggle('hide', hide);
+        }
+    });
 })();
