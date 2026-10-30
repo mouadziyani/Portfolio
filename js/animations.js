@@ -108,5 +108,32 @@
     gsap.registerPlugin(ScrollTrigger);
     root.classList.add('motion');
 
+    /* ---------- Smooth scrolling (Lenis) wired into GSAP's ticker ---------- */
+    let lenis = null;
+    if (window.Lenis) {
+        lenis = new Lenis({ lerp: 0.09 });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add(time => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+        window.lenis = lenis;
+        document.addEventListener('click', event => {
+            const link = event.target.closest('a[href^="#"]');
+            if (!link || link.hash.length < 2) return;
+            const target = document.querySelector(link.hash);
+            if (!target) return;
+            event.preventDefault();
+            lenis.scrollTo(link.hash === '#home' ? 0 : target, { offset: link.hash === '#main' ? 0 : -70, duration: 1.4 });
+            history.pushState(null, '', link.hash);
+            target.setAttribute('tabindex', '-1');
+            target.focus({ preventScroll: true });
+            target.addEventListener('blur', () => target.removeAttribute('tabindex'), { once: true });
+        });
+    }
+
+    gsap.to('.scroll-progress span', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
+
+    const impact = document.querySelector('.impact');
+    const flash = (strength = 0.6) => gsap.fromTo(impact, { opacity: strength, scale: 1.1 }, { opacity: 0, scale: 1, duration: 0.55, ease: 'power2.out' });
+
     });
 })();
