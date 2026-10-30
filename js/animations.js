@@ -135,5 +135,42 @@
     const impact = document.querySelector('.impact');
     const flash = (strength = 0.6) => gsap.fromTo(impact, { opacity: strength, scale: 1.1 }, { opacity: 0, scale: 1, duration: 0.55, ease: 'power2.out' });
 
+    /* ---------- Hero: the panels of page one slam in ---------- */
+    let heroChars = [];
+    if (window.SplitType) {
+        heroChars = new SplitType('.hero-name .split', { types: 'chars' }).chars || [];
+        new SplitType('.hero-title', { types: 'words, chars' });
+    }
+    const heroPanels = gsap.utils.toArray('.manga-page .panel');
+    const heroSet = () => {
+        gsap.set(heroPanels, { autoAlpha: 0, scale: 1.25, rotate: i => [-4, 5, -6, 4][i] });
+        gsap.set(heroChars.length ? heroChars : '.hero-name .split', { yPercent: 120, rotate: 10 });
+        gsap.set(['.p-title .eyebrow', '.katakana', '.hero-description', '.hero-actions', '.p-title .socials', '.hero-bottom'], { autoAlpha: 0, y: 30 });
+        gsap.set('.hero-title', { autoAlpha: 0, x: -40 });
+        gsap.set(['.bubble-hero', '.sfx-don', '.sfx-menace'], { autoAlpha: 0, scale: 0 });
+        gsap.set('.power-list li', { autoAlpha: 0, x: -20 });
+        gsap.set('.sun', { scale: 0 });
+    };
+    const heroPlay = () => {
+        const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+        tl.to(heroPanels, { autoAlpha: 1, scale: 1, rotate: 0, duration: 0.7, stagger: 0.14, ease: 'back.out(1.7)' }, 0)
+          .add(() => flash(0.5), 0.05)
+          .to('.manga-page', { keyframes: { x: [-9, 8, -6, 4, -2, 0] }, duration: 0.45, ease: 'none' }, 0.1)
+          .to('.sun', { scale: 1, duration: 1.2, ease: 'elastic.out(1, 0.5)' }, 0.35)
+          .to(heroChars.length ? heroChars : '.hero-name .split', { yPercent: 0, rotate: 0, duration: 1.1, stagger: 0.04 }, 0.3)
+          .to('.p-title .eyebrow', { autoAlpha: 1, y: 0, duration: 0.9 }, 0.4)
+          .to('.katakana', { autoAlpha: 1, y: 0, duration: 1 }, 0.75)
+          .to('.hero-title', { autoAlpha: 1, x: 0, duration: 0.8 }, 0.85)
+          .from('.hero-title .char', { autoAlpha: 0, duration: 0.01, stagger: 0.04, ease: 'none' }, 0.95)
+          .to(['.hero-description', '.hero-actions', '.p-title .socials', '.hero-bottom'], { autoAlpha: 1, y: 0, duration: 1, stagger: 0.1 }, 1)
+          .to('.bubble-hero', { autoAlpha: 1, scale: 1, duration: 0.7, ease: 'back.out(2.5)' }, 0.9)
+          .to('.sfx-don', { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(3)' }, 1.1)
+          .add(() => flash(0.35), 1.1)
+          .to('.sfx-menace', { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'elastic.out(1, 0.4)' }, 1.3)
+          .to('.power-list li', { autoAlpha: 1, x: 0, duration: 0.5, stagger: 0.07 }, 1.1);
+        return tl;
+    };
+    heroSet();
+
     });
 })();
