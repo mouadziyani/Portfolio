@@ -206,5 +206,29 @@
         heroPlay();
     }
 
+    /* ---------- Hero depth: panels drift apart as the page turns ---------- */
+    gsap.matchMedia().add('(min-width: 961px)', () => { // stacked mobile panels would drift into the next block
+        gsap.utils.toArray('[data-depth]').forEach(panel => {
+            gsap.to(panel, {
+                y: () => innerHeight * parseFloat(panel.dataset.depth), ease: 'none',
+                scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+            });
+        });
+    });
+    gsap.to('.p-portrait .portrait-img', {
+        scale: 1.12, ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+    });
+    if (finePointer) {
+        const ix = gsap.quickTo('.p-portrait .portrait-img', 'x', { duration: 1, ease: 'power3' });
+        const iy = gsap.quickTo('.p-portrait .portrait-img', 'y', { duration: 1, ease: 'power3' });
+        const sx = gsap.quickTo('.sun', 'x', { duration: 1.2, ease: 'power3' });
+        const sy = gsap.quickTo('.sun', 'y', { duration: 1.2, ease: 'power3' });
+        addEventListener('pointermove', e => {
+            const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
+            ix(nx * -18); iy(ny * -12); sx(nx * 26); sy(ny * 20);
+        }, { passive: true });
+    }
+
     });
 })();
