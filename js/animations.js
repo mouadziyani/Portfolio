@@ -200,6 +200,8 @@
           .call(sfx, ['gong'], 2.78)
           .to(intro, { autoAlpha: 0, duration: 0.5, ease: 'power2.out' }, 2.8);
         const gate = intro.querySelector('#intro-gate');
+        const skip = intro.querySelector('#intro-skip');
+        skip.hidden = true; // the gate already offers a way in; Skip appears once the opening runs
         let started = false;
         const begin = withSound => {
             if (started) return;
@@ -208,7 +210,12 @@
             sfx('start');
             gsap.to(gate, {
                 autoAlpha: 0, scale: 0.85, duration: 0.3, ease: 'back.in(2)',
-                onComplete: () => { gate.hidden = true; tl.play(); }
+                onComplete: () => {
+                    gate.hidden = true;
+                    skip.hidden = false;
+                    gsap.from(skip, { autoAlpha: 0, y: -20, duration: 0.4, ease: 'back.out(2)' });
+                    tl.play();
+                }
             });
         };
         gate.hidden = false;
@@ -533,6 +540,77 @@
     gsap.from('.credits p', {
         y: 60, autoAlpha: 0, duration: 1, stagger: 0.12, ease: 'back.out(1.6)',
         scrollTrigger: { trigger: '.credits', start: 'top 90%', once: true }
+    });
+
+    /* ---------- Contact form: typed characters leap out of the caret as ink ---------- */
+    // A hidden mirror of the field, filled up to the caret, tells us where the caret is on screen.
+    const mirrorProps = ['boxSizing', 'width', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth',
+        'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'fontStyle', 'fontVariant', 'fontWeight', 'fontStretch',
+        'fontSize', 'lineHeight', 'fontFamily', 'textAlign', 'textTransform', 'textIndent', 'letterSpacing', 'wordSpacing', 'tabSize'];
+    function caretPoint(field) {
+        const style = getComputedStyle(field);
+        const mirror = document.createElement('div');
+        mirrorProps.forEach(p => { mirror.style[p] = style[p]; });
+        Object.assign(mirror.style, {
+            position: 'absolute', visibility: 'hidden', left: '-9999px', top: '0',
+            whiteSpace: field.tagName === 'TEXTAREA' ? 'pre-wrap' : 'pre', overflowWrap: 'break-word'
+        });
+        const end = field.selectionEnd ?? field.value.length; // email inputs expose no selection
+        mirror.textContent = field.value.slice(0, end);
+        const marker = document.createElement('span');
+        marker.textContent = '​';
+        mirror.appendChild(marker);
+        document.body.appendChild(mirror);
+        const r = field.getBoundingClientRect();
+        const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.3;
+        const x = gsap.utils.clamp(r.left + 8, r.right - 8, r.left + marker.offsetLeft - field.scrollLeft);
+        const y = gsap.utils.clamp(r.top + 8, r.bottom - 8, r.top + marker.offsetTop - field.scrollTop + lineHeight / 2);
+        mirror.remove();
+        return { x, y };
+    }
+    const contactForm = document.querySelector('#contact-form');
+    const formBubble = document.querySelector('.form-bubble');
+    const bubbleText = formBubble ? formBubble.textContent : '';
+    let bubbleIdle;
+    function inkPop(text, x, y, className = '') {
+        const el = document.createElement('span');
+        el.className = 'type-pop ' + className;
+        el.textContent = text;
+        document.body.appendChild(el);
+        gsap.timeline({ onComplete: () => el.remove() })
+            .fromTo(el, { x, y, xPercent: -50, yPercent: -50, scale: 0, rotate: gsap.utils.random(-30, 30) },
+                { scale: 1.5, y: y - 34, rotate: gsap.utils.random(-15, 15), duration: 0.22, ease: 'back.out(3)' })
+            .to(el, { y: y - 70, x: x + gsap.utils.random(-24, 24), scale: 0.6, autoAlpha: 0, duration: 0.5, ease: 'power2.in' });
+    }
+    function inkSplat(x, y) { // backspace: the ink scatters
+        for (let i = 0; i < 5; i++) {
+            const s = document.createElement('span');
+            s.className = 'spark';
+            document.body.appendChild(s);
+            const a = gsap.utils.random(0, 360);
+            gsap.fromTo(s, { x, y, rotate: a + 90, scaleY: 0.2, autoAlpha: 1 }, {
+                x: x + Math.cos(a * Math.PI / 180) * 26, y: y + Math.sin(a * Math.PI / 180) * 26,
+                scaleY: 0.6, autoAlpha: 0, duration: 0.35, ease: 'power3.out', onComplete: () => s.remove()
+            });
+        }
+    }
+    contactForm?.addEventListener('input', e => {
+        const field = e.target;
+        if (!field.matches('input, textarea')) return;
+        const type = e.inputType || '';
+        const { x, y } = caretPoint(field);
+        if (type.startsWith('delete')) inkSplat(x, y);
+        else if (type === 'insertFromPaste' || type === 'insertFromDrop') inkPop('ペタ!', x, y, 'is-sfx');
+        else if (type === 'insertLineBreak' || type === 'insertParagraph') inkPop('↵', x, y);
+        else if (e.data && e.data.trim()) inkPop(e.data.length > 1 ? e.data.slice(-1) : e.data, x, y);
+        gsap.fromTo(field, { y: -2 }, { y: 0, duration: 0.25, ease: 'elastic.out(1, 0.3)', overwrite: true });
+        if (formBubble) { // the "Say hi!" bubble starts scribbling along
+            formBubble.textContent = 'カキカキ!';
+            formBubble.classList.add('is-writing');
+            gsap.fromTo(formBubble, { scale: 1.12 }, { scale: 1, duration: 0.3, ease: 'back.out(3)', overwrite: 'auto' });
+            clearTimeout(bubbleIdle);
+            bubbleIdle = setTimeout(() => { formBubble.textContent = bubbleText; formBubble.classList.remove('is-writing'); }, 900);
+        }
     });
 
     /* ---------- Navbar hides when diving down, returns when scrolling up ---------- */
