@@ -134,6 +134,7 @@
 
     const impact = document.querySelector('.impact');
     const flash = (strength = 0.6) => gsap.fromTo(impact, { opacity: strength, scale: 1.1 }, { opacity: 0, scale: 1, duration: 0.55, ease: 'power2.out' });
+    const sfx = (name, ...args) => window.mzSound?.play(name, ...args); // silent until the reader enables sound
 
     /* ---------- Hero: the panels of page one slam in ---------- */
     let heroChars = [];
@@ -154,7 +155,7 @@
     const heroPlay = () => {
         const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
         tl.to(heroPanels, { autoAlpha: 1, scale: 1, rotate: 0, duration: 0.7, stagger: 0.14, ease: 'back.out(1.7)' }, 0)
-          .add(() => flash(0.5), 0.05)
+          .add(() => { flash(0.5); sfx('slam'); }, 0.05)
           .to('.manga-page', { keyframes: { x: [-9, 8, -6, 4, -2, 0] }, duration: 0.45, ease: 'none' }, 0.1)
           .to('.sun', { scale: 1, duration: 1.2, ease: 'elastic.out(1, 0.5)' }, 0.35)
           .to(heroChars.length ? heroChars : '.hero-name .split', { yPercent: 0, rotate: 0, duration: 1.1, stagger: 0.04 }, 0.3)
@@ -165,7 +166,7 @@
           .to(['.hero-description', '.hero-actions', '.p-title .socials', '.hero-bottom'], { autoAlpha: 1, y: 0, duration: 1, stagger: 0.1 }, 1)
           .to('.bubble-hero', { autoAlpha: 1, scale: 1, duration: 0.7, ease: 'back.out(2.5)' }, 0.9)
           .to('.sfx-don', { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(3)' }, 1.1)
-          .add(() => flash(0.35), 1.1)
+          .add(() => { flash(0.35); sfx('don'); }, 1.1)
           .to('.sfx-menace', { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'elastic.out(1, 0.4)' }, 1.3)
           .to('.power-list li', { autoAlpha: 1, x: 0, duration: 0.5, stagger: 0.07 }, 1.1);
         return tl;
@@ -181,14 +182,40 @@
         lenis && lenis.stop();
         const counter = intro.querySelector('#intro-count');
         const count = { v: 0 };
-        const tl = gsap.timeline({ onComplete: finish });
+        // Paused until "Press Start": that click is the gesture browsers require before audio can play.
+        // The .from() tweens render their start state immediately, so the panels wait off-stage.
+        const tl = gsap.timeline({ paused: true, onComplete: finish });
         tl.from('.ip1', { xPercent: -130, rotate: -8, duration: 0.6, ease: 'back.out(1.6)' }, 0.1)
+          .call(sfx, ['whoosh'], 0.05)
+          .call(sfx, ['slam'], 0.42)
           .from('.ip2', { scale: 2.4, autoAlpha: 0, duration: 0.5, ease: 'expo.out' }, 0.55)
+          .call(sfx, ['don'], 0.6)
           .to('.intro-stage', { keyframes: { x: [-12, 10, -7, 5, -2, 0] }, duration: 0.4, ease: 'none' }, 0.6)
           .from('.ip3', { xPercent: 130, rotate: 8, duration: 0.6, ease: 'back.out(1.6)' }, 0.9)
+          .call(sfx, ['whoosh'], 0.85)
+          .call(sfx, ['slam'], 1.22)
           .to(count, { v: 100, duration: 2, ease: 'power2.inOut', onUpdate: () => { counter.textContent = String(Math.round(count.v)).padStart(3, '0'); } }, 0)
+          .call(sfx, ['rise'], 2.05)
           .to('.intro-sun', { scale: 1, duration: 0.7, ease: 'expo.in' }, 2.1)
+          .call(sfx, ['gong'], 2.78)
           .to(intro, { autoAlpha: 0, duration: 0.5, ease: 'power2.out' }, 2.8);
+        const gate = intro.querySelector('#intro-gate');
+        let started = false;
+        const begin = withSound => {
+            if (started) return;
+            started = true;
+            window.mzSound?.set(withSound);
+            sfx('start');
+            gsap.to(gate, {
+                autoAlpha: 0, scale: 0.85, duration: 0.3, ease: 'back.in(2)',
+                onComplete: () => { gate.hidden = true; tl.play(); }
+            });
+        };
+        gate.hidden = false;
+        intro.removeAttribute('aria-hidden'); // the gate is interactive, so it must be exposed
+        intro.querySelector('#intro-start').addEventListener('click', () => begin(true));
+        intro.querySelector('#intro-mute').addEventListener('click', () => begin(false));
+        intro.querySelector('#intro-start').focus({ preventScroll: true });
         const onKey = e => { if (e.key === 'Escape') finish(); };
         function finish() {
             if (intro.hidden) return;
@@ -331,8 +358,9 @@
             trigger: heading, start: 'top 80%', once: true,
             onEnter: () => {
                 if (label) scramble(label);
+                sfx('whoosh');
                 gsap.to(slash, { scaleX: 1, duration: 0.45, ease: 'expo.out', delay: 0.3 });
-                gsap.delayedCall(0.3, () => flash(0.45));
+                gsap.delayedCall(0.3, () => { flash(0.45); sfx('slam'); });
             }
         });
     });
@@ -392,7 +420,7 @@
         stamp.textContent = 'Unlocked!';
         card.appendChild(stamp);
         const at = 0.5 + i * 0.13;
-        deck.call(() => card.classList.add('unlocked'), null, at)
+        deck.call(() => { card.classList.add('unlocked'); sfx('note', i); }, null, at)
             .from(card.querySelectorAll('.chips span'), { scale: 0, autoAlpha: 0, duration: 0.5, stagger: 0.06, ease: 'back.out(2.5)' }, at)
             .fromTo(stamp, { autoAlpha: 0, scale: 2.6, rotate: -25 }, { autoAlpha: 1, scale: 1, rotate: -8, duration: 0.4, ease: 'back.out(3)' }, at + 0.2)
             .to(stamp, { autoAlpha: 0, y: -12, duration: 0.5, ease: 'power2.in' }, at + 1.8);
