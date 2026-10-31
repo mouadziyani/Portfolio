@@ -94,7 +94,9 @@ form.addEventListener('submit', async event => {
         status.dataset.state = 'success';
         status.textContent = 'Thank you! Your message was sent. I’ll get back to you soon.';
         form.reset();
+        window.mzSound?.play('success');
     } catch (error) {
+        window.mzSound?.play('error');
         status.dataset.state = 'error';
         status.textContent = error.name === 'AbortError'
             ? 'The request timed out. Please try again or email contact@mouadziyani.com.'
