@@ -1,5 +1,7 @@
 ﻿# Brand assets
 
-`mouad-ziyani-logo.png` is an unchanged copy of the supplied `img/mouad-ziyani-logo.png.png`. It is used in the navigation, hero, footer, favicon and social metadata. Preserve its original appearance and aspect ratio.
+- `mz-logo.svg` — the manga-style "MZ" monogram (paper letters, ink outline, red hard shadow, screentone and a red slash). Used in the navigation, hero logo panel and footer. Designed for dark backgrounds.
+- `favicon.svg` — the monogram on an ink tile, used as the site favicon.
+- `mouad-ziyani-logo.png` / `mouad-ziyani-logo-web.png` — the previous metallic logo. Still used for `og:image` / `twitter:image`, because social networks don't accept SVG previews.
 
 Profile and project screenshots remain in `img/`; the CV remains in `resume/`.

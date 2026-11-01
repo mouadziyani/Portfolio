@@ -172,7 +172,7 @@ main, .footer { overflow-x: clip; }
   display: grid; place-items: center; width: 50px; height: 42px; background: var(--ink); border: 2px solid var(--ink);
   box-shadow: 3px 3px 0 var(--red); overflow: hidden;
 }
-.brand-mark img { width: 120%; max-width: none; }
+.brand-mark img { width: 112%; max-width: none; }
 .nav-links { display: flex; align-items: center; gap: 2px; }
 .nav-link {
   position: relative; display: flex; align-items: baseline; gap: 6px;

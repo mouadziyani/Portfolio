@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 210" role="img" aria-label="MZ — Mouad Ziyani">
+  <title>MZ — Mouad Ziyani</title>
+  <defs>
+    <!-- Block MZ monogram, slanted like a manga title logo -->
+    <g id="mz">
+      <polygon points="30,165 30,40 66,40 94,98 122,40 158,40 158,165 126,165 126,104 104,146 84,146 62,104 62,165"/>
+      <polygon points="170,40 296,40 296,68 214,137 296,137 296,165 166,165 166,137 248,68 170,68"/>
+    </g>
+    <clipPath id="letters">
+      <polygon points="30,165 30,40 66,40 94,98 122,40 158,40 158,165 126,165 126,104 104,146 84,146 62,104 62,165"/>
+      <polygon points="170,40 296,40 296,68 214,137 296,137 296,165 166,165 166,137 248,68 170,68"/>
+    </clipPath>
+    <pattern id="tone" width="7" height="7" patternUnits="userSpaceOnUse">
+      <circle cx="3.5" cy="3.5" r="1.6" fill="#121212"/>
+    </pattern>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.45" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="1"/>
+    </linearGradient>
+    <mask id="toneMask"><rect x="0" y="0" width="330" height="210" fill="url(#fade)"/></mask>
+  </defs>
+
+  <g transform="translate(36 0) skewX(-12)">
+    <!-- red speed slash behind the letters -->
+    <polygon points="0,196 318,6 334,14 16,204" fill="#d92632"/>
+    <!-- hard offset shadow, like the site's panels -->
+    <use href="#mz" x="9" y="9" fill="#d92632"/>
+    <!-- ink outline -->
+    <use href="#mz" fill="#121212" stroke="#121212" stroke-width="10" stroke-linejoin="miter"/>
+    <!-- paper letters -->
+    <use href="#mz" fill="#f3efe6"/>
+    <!-- screentone shading on the lower half -->
+    <g clip-path="url(#letters)">
+      <rect x="0" y="60" width="330" height="120" fill="url(#tone)" mask="url(#toneMask)"/>
+    </g>
+    <!-- katana cut through the monogram -->
+    <polygon points="20,150 312,32 314,38 22,156" fill="#121212"/>
+    <polygon points="22,156 314,38 315,41 23,159" fill="#ff4b55"/>
+  </g>
+</svg>

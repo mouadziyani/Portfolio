@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <g id="mz">
+      <polygon points="30,165 30,40 66,40 94,98 122,40 158,40 158,165 126,165 126,104 104,146 84,146 62,104 62,165"/>
+      <polygon points="170,40 296,40 296,68 214,137 296,137 296,165 166,165 166,137 248,68 170,68"/>
+    </g>
+  </defs>
+  <rect width="64" height="64" rx="10" fill="#121212"/>
+  <g transform="translate(-1 12) scale(0.19) translate(36 0) skewX(-12)">
+    <use href="#mz" x="12" y="12" fill="#d92632"/>
+    <use href="#mz" fill="#f3efe6"/>
+  </g>
+</svg>
