@@ -150,14 +150,12 @@
         gsap.set('.hero-title', { autoAlpha: 0, x: -40 });
         gsap.set(['.bubble-hero', '.sfx-don', '.sfx-menace'], { autoAlpha: 0, scale: 0 });
         gsap.set('.power-list li', { autoAlpha: 0, x: -20 });
-        gsap.set('.sun', { scale: 0 });
     };
     const heroPlay = () => {
         const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
         tl.to(heroPanels, { autoAlpha: 1, scale: 1, rotate: 0, duration: 0.7, stagger: 0.14, ease: 'back.out(1.7)' }, 0)
           .add(() => { flash(0.5); sfx('slam'); }, 0.05)
           .to('.manga-page', { keyframes: { x: [-9, 8, -6, 4, -2, 0] }, duration: 0.45, ease: 'none' }, 0.1)
-          .to('.sun', { scale: 1, duration: 1.2, ease: 'elastic.out(1, 0.5)' }, 0.35)
           .to(heroChars.length ? heroChars : '.hero-name .split', { yPercent: 0, rotate: 0, duration: 1.1, stagger: 0.04 }, 0.3)
           .to('.p-title .eyebrow', { autoAlpha: 1, y: 0, duration: 0.9 }, 0.4)
           .to('.katakana', { autoAlpha: 1, y: 0, duration: 1 }, 0.75)
@@ -256,11 +254,9 @@
     if (finePointer) {
         const ix = gsap.quickTo('.p-portrait .portrait-img', 'x', { duration: 1, ease: 'power3' });
         const iy = gsap.quickTo('.p-portrait .portrait-img', 'y', { duration: 1, ease: 'power3' });
-        const sx = gsap.quickTo('.sun', 'x', { duration: 1.2, ease: 'power3' });
-        const sy = gsap.quickTo('.sun', 'y', { duration: 1.2, ease: 'power3' });
         addEventListener('pointermove', e => {
             const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
-            ix(nx * -18); iy(ny * -12); sx(nx * 26); sy(ny * 20);
+            ix(nx * -18); iy(ny * -12);
         }, { passive: true });
     }
 
@@ -392,8 +388,8 @@
         clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'expo.inOut',
         scrollTrigger: { trigger: '.portrait-frame', start: 'top 80%', once: true }
     });
-    gsap.fromTo('.portrait-frame img', { scale: 1.75 }, {
-        scale: 1.45, ease: 'none',
+    gsap.fromTo('.portrait-frame .portrait-photo', { scale: 1.2 }, {
+        scale: 1.05, ease: 'none',
         scrollTrigger: { trigger: '.portrait-frame', start: 'top bottom', end: 'bottom top', scrub: true }
     });
     gsap.from('.portrait-kanji', {
